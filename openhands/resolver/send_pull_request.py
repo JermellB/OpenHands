@@ -467,7 +467,7 @@ def update_existing_pull_request(
     )
 
     # Push the changes to the existing branch
-    result = subprocess.run(push_command, shell=True, capture_output=True, text=True)
+    result = subprocess.run(push_command, shell=False, capture_output=True, text=True)
     if result.returncode != 0:
         print(f'Error pushing changes: {result.stderr}')
         raise RuntimeError('Failed to push changes to the remote repository')
