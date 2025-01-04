@@ -60,7 +60,7 @@ def fetch_data(url, filename):
         with open(cache_path, 'r') as f:
             return f.read()
     else:
-        response = requests.get(url)
+        response = requests.get(url, timeout=60)
         if response.status_code == 200:
             with open(cache_path, 'w') as f:
                 f.write(response.text)

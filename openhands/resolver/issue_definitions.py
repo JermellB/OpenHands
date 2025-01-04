@@ -64,7 +64,7 @@ class IssueHandler(IssueHandlerInterface):
 
         # Get issues, page by page
         while True:
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(url, headers=headers, params=params, timeout=60)
             response.raise_for_status()
             issues = response.json()
 
@@ -127,7 +127,7 @@ class IssueHandler(IssueHandlerInterface):
 
         # Get comments, page by page
         while True:
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(url, headers=headers, params=params, timeout=60)
             response.raise_for_status()
             comments = response.json()
 
@@ -368,8 +368,8 @@ class PRHandler(IssueHandler):
         }
 
         response = requests.post(
-            url, json={'query': query, 'variables': variables}, headers=headers
-        )
+            url, json={'query': query, 'variables': variables}, headers=headers, 
+        timeout=60)
         response.raise_for_status()
         response_json = response.json()
 
@@ -460,7 +460,7 @@ class PRHandler(IssueHandler):
         all_comments = []
 
         while True:
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(url, headers=headers, params=params, timeout=60)
             response.raise_for_status()
             comments = response.json()
 
@@ -527,7 +527,7 @@ class PRHandler(IssueHandler):
                     'Authorization': f'Bearer {self.token}',
                     'Accept': 'application/vnd.github.v3+json',
                 }
-                response = requests.get(url, headers=headers)
+                response = requests.get(url, headers=headers, timeout=60)
                 response.raise_for_status()
                 issue_data = response.json()
                 issue_body = issue_data.get('body', '')

@@ -44,7 +44,7 @@ def get_github_repositories(
 
     # Fetch repositories from GitHub
     try:
-        response = requests.get(github_api_url, headers=headers, params=params)
+        response = requests.get(github_api_url, headers=headers, params=params, timeout=60)
         response.raise_for_status()  # Raise an error for HTTP codes >= 400
     except requests.exceptions.RequestException as e:
         raise HTTPException(

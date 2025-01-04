@@ -223,7 +223,7 @@ def branch_exists(base_url: str, branch_name: str, headers: dict) -> bool:
         headers: The HTTP headers to use for authentication
     """
     print(f'Checking if branch {branch_name} exists...')
-    response = requests.get(f'{base_url}/branches/{branch_name}', headers=headers)
+    response = requests.get(f'{base_url}/branches/{branch_name}', headers=headers, timeout=60)
     exists = response.status_code == 200
     print(f'Branch {branch_name} exists: {exists}')
     return exists
@@ -278,11 +278,11 @@ def send_pull_request(
     if target_branch:
         base_branch = target_branch
         # Verify the target branch exists
-        response = requests.get(f'{base_url}/branches/{target_branch}', headers=headers)
+        response = requests.get(f'{base_url}/branches/{target_branch}', headers=headers, timeout=60)
         if response.status_code != 200:
             raise ValueError(f'Target branch {target_branch} does not exist')
     else:
-        response = requests.get(f'{base_url}', headers=headers)
+        response = requests.get(f'{base_url}', headers=headers, timeout=60)
         response.raise_for_status()
         base_branch = response.json()['default_branch']
     print(f'Base branch: {base_branch}')
@@ -342,7 +342,7 @@ def send_pull_request(
         }
 
         # Send the PR and get its URL to tell the user
-        response = requests.post(f'{base_url}/pulls', headers=headers, json=data)
+        response = requests.post(f'{base_url}/pulls', headers=headers, json=data, timeout=60)
         if response.status_code == 403:
             raise RuntimeError(
                 'Failed to create pull request due to missing permissions. '
@@ -358,7 +358,7 @@ def send_pull_request(
                 f'{base_url}/pulls/{pr_data["number"]}/requested_reviewers',
                 headers=headers,
                 json=review_data,
-            )
+            timeout=60)
             if review_response.status_code != 201:
                 print(
                     f'Warning: Failed to request review from {reviewer}: {review_response.text}'
@@ -403,8 +403,8 @@ def reply_to_comment(github_token: str, comment_id: str, reply: str):
 
     # Send the reply to the comment
     response = requests.post(
-        url, json={'query': query, 'variables': variables}, headers=headers
-    )
+        url, json={'query': query, 'variables': variables}, headers=headers, 
+    timeout=60)
     response.raise_for_status()
 
 
@@ -426,7 +426,7 @@ def send_comment_msg(base_url: str, issue_number: int, github_token: str, msg: s
     # Post a comment on the PR
     comment_url = f'{base_url}/issues/{issue_number}/comments'
     comment_data = {'body': msg}
-    comment_response = requests.post(comment_url, headers=headers, json=comment_data)
+    comment_response = requests.post(comment_url, headers=headers, json=comment_data, timeout=60)
     if comment_response.status_code != 201:
         print(
             f'Failed to post comment: {comment_response.status_code} {comment_response.text}'

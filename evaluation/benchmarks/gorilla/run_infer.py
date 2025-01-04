@@ -182,7 +182,7 @@ if __name__ == '__main__':
     # Check if the file exists
     if not os.path.exists(file_path):
         url = 'https://raw.githubusercontent.com/ShishirPatil/gorilla/main/eval/eval-scripts/codebleu/parser/my-languages.so'
-        response = requests.get(url)
+        response = requests.get(url, timeout=60)
         with open(file_path, 'wb') as f:
             f.write(response.content)
     else:
