@@ -18,7 +18,6 @@ TODOs:
 
 import asyncio
 import os
-import random
 import re
 from typing import Callable
 
@@ -50,6 +49,7 @@ from openhands.events.action import (
 )
 from openhands.events.observation import Observation
 from openhands.utils.async_utils import call_async_from_sync
+import secrets
 
 ACTION_FORMAT = """
 <<FINAL_ANSWER||
@@ -133,7 +133,7 @@ def compare_answers(model_output: str | None, ground_truth: str):
         # Log the exception
         logger.error(f'An error occurred: {e}\n defaulting to random guess ...')
         # choose a random answer if the model output is not in the correct format
-        predicted_answer = random.choice(['A', 'B', 'C', 'D'])
+        predicted_answer = secrets.choice(['A', 'B', 'C', 'D'])
 
     logger.info('#############################################')
     logger.info(f'Predicted answer: {predicted_answer}')
@@ -157,7 +157,7 @@ def convert_instance_dict(instance):
     ]
 
     # Randomize the order of choices
-    random.shuffle(out_instance_dict['choices'])
+    secrets.SystemRandom().shuffle(out_instance_dict['choices'])
 
     # Find the index of the correct answer after shuffling and store it as a letter (A/B/C/D)
     correct_index = out_instance_dict['choices'].index(correct_answer)
@@ -273,7 +273,7 @@ Ok now its time to start solving the question. Good luck!
     # check if the model output matches the ground truth
     test_result = compare_answers(final_message, instance.correct_solution)
     if final_message is None and len(found_options) > 0:
-        _selected = random.choice(found_options)
+        _selected = secrets.choice(found_options)
         # if the final message is None, then the agent did not report the answer in the correct format
         # so we randomly select one of the found options and compare it with the correct solution
         test_result = _selected == instance.correct_solution
