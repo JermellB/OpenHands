@@ -47,8 +47,8 @@ def _generate_dockerfile(
     env = Environment(
         loader=FileSystemLoader(
             searchpath=os.path.join(os.path.dirname(__file__), 'runtime_templates')
-        )
-    )
+        ), 
+    autoescape=True)
     template = env.get_template('Dockerfile.j2')
 
     dockerfile_content = template.render(
