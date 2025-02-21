@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from openhands.server.shared import openhands_config
+from security import safe_requests
 
 app = APIRouter(prefix='/api')
 
@@ -44,7 +45,7 @@ def get_github_repositories(
 
     # Fetch repositories from GitHub
     try:
-        response = requests.get(github_api_url, headers=headers, params=params)
+        response = safe_requests.get(github_api_url, headers=headers, params=params)
         response.raise_for_status()  # Raise an error for HTTP codes >= 400
     except requests.exceptions.RequestException as e:
         raise HTTPException(

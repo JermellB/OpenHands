@@ -3,10 +3,10 @@ import os
 from functools import partial
 
 import pandas as pd
-import requests
 from ast_eval_hf import ast_eval_hf, ast_parse
 from ast_eval_tf import ast_eval_tf
 from ast_eval_th import ast_eval_th
+from security import safe_requests
 
 
 # This function is modified from Gorilla's APIBench implementations (https://github.com/ShishirPatil/gorilla/blob/main/eval/get_llm_responses.py).
@@ -60,7 +60,7 @@ def fetch_data(url, filename):
         with open(cache_path, 'r') as f:
             return f.read()
     else:
-        response = requests.get(url)
+        response = safe_requests.get(url)
         if response.status_code == 200:
             with open(cache_path, 'w') as f:
                 f.write(response.text)

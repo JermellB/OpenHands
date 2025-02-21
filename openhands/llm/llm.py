@@ -5,9 +5,8 @@ import warnings
 from functools import partial
 from typing import Any
 
-import requests
-
 from openhands.core.config import LLMConfig
+from security import safe_requests
 
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
@@ -314,7 +313,7 @@ class LLM(RetryMixin, DebugMixin):
         if self.config.model.startswith('litellm_proxy/'):
             # IF we are using LiteLLM proxy, get model info from LiteLLM proxy
             # GET {base_url}/v1/model/info with litellm_model_id as path param
-            response = requests.get(
+            response = safe_requests.get(
                 f'{self.config.base_url}/v1/model/info',
                 headers={'Authorization': f'Bearer {self.config.api_key}'},
             )
