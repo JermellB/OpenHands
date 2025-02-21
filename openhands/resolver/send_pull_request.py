@@ -17,6 +17,7 @@ from openhands.resolver.io_utils import (
 )
 from openhands.resolver.patching import apply_diff, parse_patch
 from openhands.resolver.resolver_output import ResolverOutput
+from security import safe_requests
 
 
 def apply_patch(repo_dir: str, patch: str) -> None:
@@ -223,7 +224,7 @@ def branch_exists(base_url: str, branch_name: str, headers: dict) -> bool:
         headers: The HTTP headers to use for authentication
     """
     print(f'Checking if branch {branch_name} exists...')
-    response = requests.get(f'{base_url}/branches/{branch_name}', headers=headers)
+    response = safe_requests.get(f'{base_url}/branches/{branch_name}', headers=headers)
     exists = response.status_code == 200
     print(f'Branch {branch_name} exists: {exists}')
     return exists
@@ -278,11 +279,11 @@ def send_pull_request(
     if target_branch:
         base_branch = target_branch
         # Verify the target branch exists
-        response = requests.get(f'{base_url}/branches/{target_branch}', headers=headers)
+        response = safe_requests.get(f'{base_url}/branches/{target_branch}', headers=headers)
         if response.status_code != 200:
             raise ValueError(f'Target branch {target_branch} does not exist')
     else:
-        response = requests.get(f'{base_url}', headers=headers)
+        response = safe_requests.get(f'{base_url}', headers=headers)
         response.raise_for_status()
         base_branch = response.json()['default_branch']
     print(f'Base branch: {base_branch}')

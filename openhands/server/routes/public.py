@@ -3,6 +3,7 @@ import warnings
 import requests
 
 from openhands.security.options import SecurityAnalyzers
+from security import safe_requests
 
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
@@ -63,7 +64,7 @@ async def get_litellm_models() -> list[str]:
         if ollama_base_url:
             ollama_url = ollama_base_url.strip('/') + '/api/tags'
             try:
-                ollama_models_list = requests.get(ollama_url, timeout=3).json()[
+                ollama_models_list = safe_requests.get(ollama_url, timeout=3).json()[
                     'models'
                 ]
                 for model in ollama_models_list:

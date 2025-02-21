@@ -12,6 +12,7 @@ from openhands.core.logger import openhands_logger as logger
 from openhands.events.event import Event
 from openhands.llm.llm import LLM
 from openhands.resolver.github_issue import GithubIssue, ReviewThread
+from security import safe_requests
 
 
 class IssueHandlerInterface(ABC):
@@ -64,7 +65,7 @@ class IssueHandler(IssueHandlerInterface):
 
         # Get issues, page by page
         while True:
-            response = requests.get(url, headers=headers, params=params)
+            response = safe_requests.get(url, headers=headers, params=params)
             response.raise_for_status()
             issues = response.json()
 
@@ -127,7 +128,7 @@ class IssueHandler(IssueHandlerInterface):
 
         # Get comments, page by page
         while True:
-            response = requests.get(url, headers=headers, params=params)
+            response = safe_requests.get(url, headers=headers, params=params)
             response.raise_for_status()
             comments = response.json()
 
@@ -460,7 +461,7 @@ class PRHandler(IssueHandler):
         all_comments = []
 
         while True:
-            response = requests.get(url, headers=headers, params=params)
+            response = safe_requests.get(url, headers=headers, params=params)
             response.raise_for_status()
             comments = response.json()
 
@@ -527,7 +528,7 @@ class PRHandler(IssueHandler):
                     'Authorization': f'Bearer {self.token}',
                     'Accept': 'application/vnd.github.v3+json',
                 }
-                response = requests.get(url, headers=headers)
+                response = safe_requests.get(url, headers=headers)
                 response.raise_for_status()
                 issue_data = response.json()
                 issue_body = issue_data.get('body', '')

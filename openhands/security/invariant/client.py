@@ -3,6 +3,7 @@ from typing import Any, Union
 
 import requests
 from requests.exceptions import ConnectionError, HTTPError, Timeout
+from security import safe_requests
 
 
 class InvariantClient:
@@ -23,11 +24,11 @@ class InvariantClient:
         while elapsed < self.timeout:
             try:
                 if session_id:
-                    response = requests.get(
+                    response = safe_requests.get(
                         f'{self.server}/session/new?session_id={session_id}', timeout=60
                     )
                 else:
-                    response = requests.get(f'{self.server}/session/new', timeout=60)
+                    response = safe_requests.get(f'{self.server}/session/new', timeout=60)
                 response.raise_for_status()
                 return response.json().get('id'), None
             except (ConnectionError, Timeout):
@@ -68,7 +69,7 @@ class InvariantClient:
 
         def get_template(self) -> tuple[str | None, Exception | None]:
             try:
-                response = requests.get(
+                response = safe_requests.get(
                     f'{self.server}/policy/template',
                     timeout=60,
                 )
