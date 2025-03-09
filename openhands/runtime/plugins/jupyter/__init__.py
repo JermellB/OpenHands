@@ -9,6 +9,7 @@ from openhands.runtime.plugins.jupyter.execute_server import JupyterKernel
 from openhands.runtime.plugins.requirement import Plugin, PluginRequirement
 from openhands.runtime.utils import find_available_tcp_port
 from openhands.utils.shutdown_listener import should_continue
+from security import safe_command
 
 
 @dataclass
@@ -22,8 +23,7 @@ class JupyterPlugin(Plugin):
     async def initialize(self, username: str, kernel_id: str = 'openhands-default'):
         self.kernel_gateway_port = find_available_tcp_port(40000, 49999)
         self.kernel_id = kernel_id
-        self.gateway_process = subprocess.Popen(
-            (
+        self.gateway_process = safe_command.run(subprocess.Popen, (
                 f"su - {username} -s /bin/bash << 'EOF'\n"
                 'cd /openhands/code\n'
                 'export POETRY_VIRTUALENVS_PATH=/openhands/poetry;\n'

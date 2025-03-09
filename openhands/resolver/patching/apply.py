@@ -6,6 +6,7 @@ import tempfile
 
 from .exceptions import HunkApplyException, SubprocessException
 from .snippets import remove, which
+from security import safe_command
 
 
 def _apply_diff_with_subprocess(diff, lines, reverse=False):
@@ -40,7 +41,7 @@ def _apply_diff_with_subprocess(diff, lines, reverse=False):
         rejfilepath,
         oldfilepath,
     ]
-    ret = subprocess.call(args)
+    ret = safe_command.run(subprocess.call, args)
 
     with open(newfilepath) as f:
         lines = f.read().splitlines()

@@ -1,6 +1,7 @@
 import subprocess
 
 from openhands.core.logger import openhands_logger as logger
+from security import safe_command
 
 
 def init_user_and_working_directory(
@@ -35,15 +36,15 @@ def init_user_and_working_directory(
     # First create the working directory, independent of the user
     logger.debug(f'Client working directory: {initial_pwd}')
     command = f'umask 002; mkdir -p {initial_pwd}'
-    output = subprocess.run(command, shell=True, capture_output=True)
+    output = safe_command.run(subprocess.run, command, shell=True, capture_output=True)
     out_str = output.stdout.decode()
 
     command = f'chown -R {username}:root {initial_pwd}'
-    output = subprocess.run(command, shell=True, capture_output=True)
+    output = safe_command.run(subprocess.run, command, shell=True, capture_output=True)
     out_str += output.stdout.decode()
 
     command = f'chmod g+rw {initial_pwd}'
-    output = subprocess.run(command, shell=True, capture_output=True)
+    output = safe_command.run(subprocess.run, command, shell=True, capture_output=True)
     out_str += output.stdout.decode()
     logger.debug(f'Created working directory. Output: [{out_str}]')
 
@@ -54,8 +55,7 @@ def init_user_and_working_directory(
     # Check if the username already exists
     existing_user_id = -1
     try:
-        result = subprocess.run(
-            f'id -u {username}', shell=True, check=True, capture_output=True
+        result = safe_command.run(subprocess.run, f'id -u {username}', shell=True, check=True, capture_output=True
         )
         existing_user_id = int(result.stdout.decode().strip())
 
@@ -82,7 +82,7 @@ def init_user_and_working_directory(
 
     # Add sudoer
     sudoer_line = r"echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers"
-    output = subprocess.run(sudoer_line, shell=True, capture_output=True)
+    output = safe_command.run(subprocess.run, sudoer_line, shell=True, capture_output=True)
     if output.returncode != 0:
         raise RuntimeError(f'Failed to add sudoer: {output.stderr.decode()}')
     logger.debug(f'Added sudoer successfully. Output: [{output.stdout.decode()}]')
@@ -91,7 +91,7 @@ def init_user_and_working_directory(
         f'useradd -rm -d /home/{username} -s /bin/bash '
         f'-g root -G sudo -u {user_id} {username}'
     )
-    output = subprocess.run(command, shell=True, capture_output=True)
+    output = safe_command.run(subprocess.run, command, shell=True, capture_output=True)
     if output.returncode == 0:
         logger.debug(
             f'Added user `{username}` successfully with UID {user_id}. Output: [{output.stdout.decode()}]'

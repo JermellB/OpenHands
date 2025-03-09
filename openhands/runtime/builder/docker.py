@@ -11,6 +11,7 @@ from openhands.core.logger import RollingLogger
 from openhands.core.logger import openhands_logger as logger
 from openhands.runtime.builder.base import RuntimeBuilder
 from openhands.utils.term_color import TermColor, colorize
+from security import safe_command
 
 
 class DockerRuntimeBuilder(RuntimeBuilder):
@@ -100,8 +101,7 @@ class DockerRuntimeBuilder(RuntimeBuilder):
         )
 
         try:
-            process = subprocess.Popen(
-                buildx_cmd,
+            process = safe_command.run(subprocess.Popen, buildx_cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,

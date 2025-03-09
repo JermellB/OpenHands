@@ -17,6 +17,7 @@ from openhands.resolver.io_utils import (
 )
 from openhands.resolver.patching import apply_diff, parse_patch
 from openhands.resolver.resolver_output import ResolverOutput
+from security import safe_command
 
 
 def apply_patch(repo_dir: str, patch: str) -> None:
@@ -140,8 +141,7 @@ def initialize_repo(
 
     # Checkout the base commit if provided
     if base_commit:
-        result = subprocess.run(
-            f'git -C {dest_dir} checkout {base_commit}',
+        result = safe_command.run(subprocess.run, f'git -C {dest_dir} checkout {base_commit}',
             shell=True,
             capture_output=True,
             text=True,
@@ -162,8 +162,7 @@ def make_commit(repo_dir: str, issue: GithubIssue, issue_type: str) -> None:
         issue_type: The type of the issue
     """
     # Check if git username is set
-    result = subprocess.run(
-        f'git -C {repo_dir} config user.name',
+    result = safe_command.run(subprocess.run, f'git -C {repo_dir} config user.name',
         shell=True,
         capture_output=True,
         text=True,
@@ -171,8 +170,7 @@ def make_commit(repo_dir: str, issue: GithubIssue, issue_type: str) -> None:
 
     if not result.stdout.strip():
         # If username is not set, configure git
-        subprocess.run(
-            f'git -C {repo_dir} config user.name "openhands" && '
+        safe_command.run(subprocess.run, f'git -C {repo_dir} config user.name "openhands" && '
             f'git -C {repo_dir} config user.email "openhands@all-hands.dev" && '
             f'git -C {repo_dir} config alias.git "git --no-pager"',
             shell=True,
@@ -181,16 +179,14 @@ def make_commit(repo_dir: str, issue: GithubIssue, issue_type: str) -> None:
         print('Git user configured as openhands')
 
     # Add all changes to the git index
-    result = subprocess.run(
-        f'git -C {repo_dir} add .', shell=True, capture_output=True, text=True
+    result = safe_command.run(subprocess.run, f'git -C {repo_dir} add .', shell=True, capture_output=True, text=True
     )
     if result.returncode != 0:
         print(f'Error adding files: {result.stderr}')
         raise RuntimeError('Failed to add files to git')
 
     # Check the status of the git index
-    status_result = subprocess.run(
-        f'git -C {repo_dir} status --porcelain',
+    status_result = safe_command.run(subprocess.run, f'git -C {repo_dir} status --porcelain',
         shell=True,
         capture_output=True,
         text=True,
@@ -467,7 +463,7 @@ def update_existing_pull_request(
     )
 
     # Push the changes to the existing branch
-    result = subprocess.run(push_command, shell=True, capture_output=True, text=True)
+    result = safe_command.run(subprocess.run, push_command, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
         print(f'Error pushing changes: {result.stderr}')
         raise RuntimeError('Failed to push changes to the remote repository')
