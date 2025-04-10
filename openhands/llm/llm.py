@@ -317,7 +317,7 @@ class LLM(RetryMixin, DebugMixin):
             response = requests.get(
                 f'{self.config.base_url}/v1/model/info',
                 headers={'Authorization': f'Bearer {self.config.api_key}'},
-            )
+            timeout=60)
             resp_json = response.json()
             if 'data' not in resp_json:
                 logger.error(

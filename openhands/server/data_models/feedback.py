@@ -37,7 +37,7 @@ def store_feedback(feedback: FeedbackDataModel) -> dict[str, str]:
         FEEDBACK_URL,
         headers={'Content-Type': 'application/json'},
         json=feedback.model_dump(),
-    )
+    timeout=60)
     if response.status_code != 200:
         raise ValueError(f'Failed to store feedback: {response.text}')
     response_data = json.loads(response.text)
