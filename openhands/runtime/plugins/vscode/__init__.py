@@ -33,8 +33,7 @@ class VSCodePlugin(Plugin):
         self.gateway_process = subprocess.Popen(
             cmd,
             stderr=subprocess.STDOUT,
-            shell=True,
-        )
+            shell=False)
         # read stdout until the kernel gateway is ready
         output = ''
         while should_continue() and self.gateway_process.stdout is not None:
