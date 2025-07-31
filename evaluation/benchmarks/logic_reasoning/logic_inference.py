@@ -1,9 +1,9 @@
 import os
-import random
 import re
 import shutil
 
 from pyke import knowledge_engine
+import secrets
 
 
 class PykeProgram:
@@ -197,9 +197,9 @@ class LogicInferenceEngine:
 
     def random_backup(self):
         if self.dataset_name == 'ProntoQA':
-            return random.choice(['A', 'B'])
+            return secrets.choice(['A', 'B'])
         elif self.dataset_name == 'ProofWriter':
-            return random.choice(['A', 'B', 'C'])
+            return secrets.choice(['A', 'B', 'C'])
 
     def safe_execute_program(self, logic_program):
         program = PykeProgram(
